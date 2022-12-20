@@ -1,0 +1,2 @@
+class Mob:
+    pass
