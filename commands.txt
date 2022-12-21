@@ -2,7 +2,7 @@
 
 
 help - TO GET COMMAND LIST
-create_hero  - /create_hero <name> TO CREATE NEW HERO
+create_hero  - /create_hero <hero name> TO CREATE NEW HERO
 delete_hero - TO DELETE HERO
 check_hero - TO CHECK HERO INFO
 check_inventoty - TO CHECK HERO INVENTORY
@@ -10,10 +10,10 @@ check_gear - TO CHECK HERO GEAR
 check_locations - TO SEE REACHABLE LOCATIONS
 move - /move <location name> TO CHANGE LOCATION
 check_shop - TO SEE AVAILABLE ITEMS IN LOCATION'S SHOP
-check_item -/check_item <name> TO SEE ITEM/POTION INFORMATION
-buy -/buy <name> TO BUY ITEM/POTION
-sell - /sell <name> TO SELL ITEM/POTION
-use - /use <name> TO USE ITEM/POTION
-take_off - /take_off <name> TO TAKE OFF ITEM
+check_item -/check_item <item name> TO SEE ITEM/POTION INFORMATION
+buy -/buy <item name> TO BUY ITEM/POTION
+sell - /sell <item name> TO SELL ITEM/POTION
+use - /use <item name> TO USE ITEM/POTION
+take_off - /take_off <item name> TO TAKE OFF ITEM
 fight - TO START FIGHT
 hit - TO HIT MOB WHILE FIGHTING
