@@ -6,7 +6,7 @@
 /help - TO GET COMMAND LIST
 
 
-/create_hero <hero name> - TO CREATE NEW HERO
+/create_hero <<hero name>> - TO CREATE NEW HERO
 
 
 /delete_hero - TO DELETE HERO
