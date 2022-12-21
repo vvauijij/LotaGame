@@ -6,7 +6,7 @@
 /help - TO GET COMMAND LIST
 
 
-/create_hero <<hero name>> - TO CREATE NEW HERO
+/create_hero hero_name - TO CREATE NEW HERO
 
 
 /delete_hero - TO DELETE HERO
@@ -24,25 +24,25 @@
 /check_locations - TO SEE REACHABLE LOCATIONS
 
 
-/move <location name> - TO CHANGE LOCATION
+/move location_name - TO CHANGE LOCATION
 
 
 /check_shop - TO SEE AVAILABLE ITEMS IN LOCATION'S SHOP
 
 
-/check_item <item name> - TO SEE ITEM/POTION INFORMATION
+/check_item item_name - TO SEE ITEM/POTION INFORMATION
 
 
-/buy <item name> - TO BUY ITEM/POTION
+/buy item_name - TO BUY ITEM/POTION
 
 
-/sell <item name> - TO SELL ITEM/POTION
+/sell item_name - TO SELL ITEM/POTION
 
 
-/use <item name> - TO USE ITEM/POTION
+/use item_name - TO USE ITEM/POTION
 
 
-/take_off <item name> - TO TAKE OFF ITEM
+/take_off item_name - TO TAKE OFF ITEM
 
 
 /fight - TO START FIGHT
