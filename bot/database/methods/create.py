@@ -231,6 +231,60 @@ def create_items():
     connection.commit()
 
 
+def create_mobs():
+    cursor.execute("""INSERT INTO mobs (mob_name,
+                                        mob_id,
+                                        hp,
+                                        xp,
+                                        money,
+                                        req_level,
+                                        attack_type,
+                                        attack,
+                                        armour,
+                                        magic_armour) 
+                                VALUES (
+                                          'harpy',
+                                          1,
+                                          30,
+                                          30,
+                                          30,
+                                          0,
+                                          'regular',
+                                          10,
+                                          0,
+                                          0
+                                        ), 
+
+                                        (
+                                          'centaur',
+                                          2,
+                                          100,
+                                          50,
+                                          50,
+                                          3,
+                                          'regular',
+                                          15,
+                                          10,
+                                          5
+                                        ),
+
+                                        (
+                                          'wizard',
+                                          3,
+                                          70,
+                                          70,
+                                          70,
+                                          5,
+                                          'magic',
+                                          30,
+                                          0,
+                                          20
+                                        )""")
+
+    connection.commit()
+
+
 def create_bd():
     create_locations()
     create_items()
+    create_mobs()

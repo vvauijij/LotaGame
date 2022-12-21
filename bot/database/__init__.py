@@ -71,3 +71,33 @@ cursor.execute("""
                   is_carried INTEGER NOT NULL,
                   quantity INTEGER NOT NULL);
                   """)
+
+cursor.execute("""
+                  CREATE TABLE IF NOT EXISTS mobs (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  mob_name text NOT NULL,
+                  mob_id INTEGER NOT NULL,
+                  hp INTEGER NOT NULL,
+                  xp INTEGER NOT NULL,
+                  money INTEGER NOT NULL,
+                  req_level INTEGER NOT NULL,
+                  attack_type text NOT NULL,
+                  attack INTEGER NOT NULL,
+                  armour INTEGER NOT NULL,
+                  magic_armour INTEGER NOT NULL);
+                  """)
+
+cursor.execute("""
+                  CREATE TABLE IF NOT EXISTS active_mobs (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  mob_name text NOT NULL,
+                  telegram_id INTEGER NOT NULL,
+                  hp INTEGER NOT NULL,
+                  xp INTEGER NOT NULL,
+                  money INTEGER NOT NULL,
+                  attack_type text NOT NULL,
+                  attack INTEGER NOT NULL,
+                  armour INTEGER NOT NULL,
+                  magic_armour INTEGER NOT NULL,
+                  hits_taken INTEGER NOT NULL);
+                  """)

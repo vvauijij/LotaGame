@@ -2,6 +2,7 @@ from asyncio import sleep
 
 from aiogram.utils import executor
 from aiogram import Bot, Dispatcher, types
+from aiogram.types.update import AllowedUpdates
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 
@@ -9,10 +10,11 @@ from bot.misc import TgKeys
 from bot.misc.util import get_command_text
 
 from bot.database.methods.create import create_bd
-from bot.database.methods.get import is_created_hero_bd, is_fighting_hero_bd, get_hero_info_bd
-from bot.database.methods.update import create_hero_bd, delete_hero_bd
+from bot.database.methods.get import is_created_hero_bd, is_in_safe_zone_bd, is_fighting_hero_bd, get_hero_name_bd, get_hero_info_bd
+from bot.database.methods.update import create_hero_bd, delete_hero_bd, refresh_hero_bd
 from bot.database.methods.location import get_hero_location_id_bd, get_hero_available_locations_bd, get_location_id_bd, get_distance_bd, set_hero_location_bd
 from bot.database.methods.item import get_hero_items_bd, get_hero_gear_bd, get_hero_available_items_bd, get_item_info_bd, buy_item_bd, sell_item_bd, use_item_bd, take_off_item_bd
+from bot.database.methods.fight import create_mob_bd, delete_mob_bd, hit_mob_bd, hits_taken_bd
 
 
 bot = Bot(token=TgKeys.TOKEN)
@@ -47,7 +49,8 @@ async def help_command(message: types.Message):
                         "/sell <name> TO SELL ITEM/POTION\n\n"
                         "/use <name> TO USE ITEM/POTION\n\n"
                         "/take_off <name> TO TAKE OFF ITEM\n\n"
-                        "/fight TO START FIGHT\n\n")
+                        "/fight TO START FIGHT\n\n"
+                        "/hit TO HIT MOB WHILE FIGHTING\n\n")
 
 
 @dp.message_handler(commands=['create_hero'])
@@ -168,6 +171,10 @@ async def check_hero_locations(message: types.Message):
         await message.reply(f'YOU ARE NOW TRAVVELING... TRY AGAIN LATER\n\n')
         return
 
+    if is_fighting_hero_bd(message.from_user.id):
+        await message.reply(f'YOU ARE NOW FIGHTING... TRY AGAIN LATER\n\n')
+        return
+
     available_locations = get_hero_available_locations_bd(message.from_user.id)
 
     if not available_locations:
@@ -212,6 +219,9 @@ async def move_hero(message: types.Message):
     await sleep(distance)
     set_hero_location_bd(message.from_user.id, to_location_id)
 
+    if is_in_safe_zone_bd(message.from_user.id):
+        refresh_hero_bd(message.from_user.id)
+
     await message.reply(f'YOU ARRIVED TO {to_location_name}')
 
 
@@ -228,10 +238,15 @@ async def check_shop(message: types.Message):
         await message.reply(f'YOU ARE NOW TRAVVELING... TRY AGAIN LATER\n\n')
         return
 
+    if is_fighting_hero_bd(message.from_user.id):
+        await message.reply(f'YOU ARE NOW FIGHTING... TRY AGAIN LATER\n\n')
+        return
+
     available_items = get_hero_available_items_bd(message.from_user.id)
 
     if not available_items:
         await message.reply(f'NO ITEMS AVAILABLE...\n\n')
+        return
 
     available_items_message = "SHOP ITEMS:\n\n"
     for item in available_items:
@@ -275,6 +290,10 @@ async def buy_item(message: types.Message):
         await message.reply(f'YOU ARE NOW TRAVVELING... TRY AGAIN LATER\n\n')
         return
 
+    if is_fighting_hero_bd(message.from_user.id):
+        await message.reply(f'YOU ARE NOW FIGHTING... TRY AGAIN LATER\n\n')
+        return
+
     item_name = get_command_text(message.text)
 
     if not item_name in get_hero_available_items_bd(message.from_user.id):
@@ -295,6 +314,10 @@ async def sell_item(message: types.Message):
 
     if get_hero_location_id_bd(message.from_user.id) == -1:
         await message.reply(f'YOU ARE NOW TRAVVELING... TRY AGAIN LATER\n\n')
+        return
+
+    if is_fighting_hero_bd(message.from_user.id):
+        await message.reply(f'YOU ARE NOW FIGHTING... TRY AGAIN LATER\n\n')
         return
 
     item_name = get_command_text(message.text)
@@ -360,12 +383,47 @@ async def start_fight(message: types.Message):
     Starting fight
     """
     if not is_created_hero_bd(message.from_user.id):
-        await message.reply(f'NO HERO TO CHECK ITEM INFO')
+        await message.reply(f'NO HERO TO START FIGHT')
         return
 
     if get_hero_location_id_bd(message.from_user.id) == -1:
         await message.reply(f'YOU ARE NOW TRAVVELING... TRY AGAIN LATER\n\n')
         return
+
+    await message.reply(create_mob_bd(message.from_user.id))
+
+    while is_fighting_hero_bd(message.from_user.id):
+        hits_taken = hits_taken_bd(message.from_user.id)
+        await sleep(60)
+        hits_taken_update = hits_taken_bd(message.from_user.id)
+
+        if hits_taken_update == hits_taken:
+            hero_name = get_hero_name_bd(message.from_user.id)
+            delete_mob_bd(message.from_user.id)
+            delete_hero_bd(message.from_user.id)
+            create_hero_bd(message.from_user.id, hero_name)
+            await message.reply(f'HERO WAS KILLED IN FIGHT... RESTARTING LOTA GAME\n\n')
+            return
+
+
+@dp.message_handler(commands=['hit'])
+async def hit(message: types.Message):
+    """
+    Hit mob while fighting
+    """
+    if not is_created_hero_bd(message.from_user.id):
+        await message.reply(f'NO HERO TO HIT MOB')
+        return
+
+    if get_hero_location_id_bd(message.from_user.id) == -1:
+        await message.reply(f'YOU ARE NOW TRAVVELING... TRY AGAIN LATER\n\n')
+        return
+
+    if not is_fighting_hero_bd(message.from_user.id):
+        await message.reply(f'YOU ARE NOT FIGHTING NOW... TRY AGAIN LATER\n\n')
+        return
+
+    await message.reply(hit_mob_bd(message.from_user.id))
 
 
 async def __on_start_up(dp: Dispatcher) -> None:

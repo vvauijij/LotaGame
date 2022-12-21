@@ -41,22 +41,35 @@ def get_hero_gear_bd(user_id):
 
 
 def get_hero_available_items_bd(user_id):
+    cursor.execute("""SELECT level 
+                    FROM users 
+                    WHERE telegram_id = :telegram_id""",
+                   {'telegram_id': user_id})
+
+    hero_level = cursor.fetchone()
+
     hero_location_id = get_hero_location_id_bd(user_id)
 
     if hero_location_id == 0:
-        cursor.execute("""SELECT item_name
+        cursor.execute("""SELECT item_name,
+                                req_level
                     FROM items
                     WHERE available_capital = 1""")
     elif hero_location_id == 1:
-        cursor.execute("""SELECT item_name
+        cursor.execute("""SELECT item_name,
+                                 req_level
                     FROM items
                     WHERE available_village = 1""")
 
     available_items_names = cursor.fetchall()
 
+    if not available_items_names:
+        return
+
     available_items = list()
     for item in available_items_names:
-        available_items.append(item[0])
+        if int(item[1]) <= int(hero_level[0]):
+            available_items.append(item[0])
 
     return available_items
 
@@ -345,8 +358,7 @@ def take_off_item_bd(item_name, user_id):
     if item_type is None:
         return None
 
-    if item_type == 'item':
-        cursor.execute("""SELECT hp,
+    cursor.execute("""SELECT hp,
                             current_hp,
                             mana,
                             current_mana,
@@ -356,7 +368,7 @@ def take_off_item_bd(item_name, user_id):
                             magic_armour
                     FROM users
                     WHERE telegram_id = :telegram_id""",
-                       {'telegram_id': user_id})
+                   {'telegram_id': user_id})
 
     hero_info = cursor.fetchone()
 
@@ -396,7 +408,7 @@ def take_off_item_bd(item_name, user_id):
                         'magic_attack': int(hero_info[5]) - int(item_info[3]),
                         'armour': int(hero_info[6]) - int(item_info[4]),
                         'magic_armour': int(hero_info[7]) - int(item_info[5]),
-                        'telegram_id' : user_id})
+                        'telegram_id': user_id})
 
         connection.commit()
 

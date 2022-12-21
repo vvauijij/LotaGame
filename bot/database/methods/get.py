@@ -26,6 +26,33 @@ def is_fighting_hero_bd(user_id) -> bool:
         return None
 
 
+def is_in_safe_zone_bd(user_id) -> bool:
+    cursor.execute("""SELECT location_id 
+                    FROM users 
+                    WHERE telegram_id = :telegram_id""",
+                   {'telegram_id': user_id})
+
+    is_fighting = cursor.fetchone()
+    if is_fighting:
+        return is_fighting[0] in [0, 1]
+    else:
+        return None
+
+
+def get_hero_name_bd(user_id) -> str:
+    cursor.execute("""SELECT hero_name
+                    FROM users 
+                    WHERE telegram_id = :telegram_id""",
+                   {'telegram_id': user_id})
+
+    hero_name = cursor.fetchone()
+
+    if hero_name:
+        return hero_name[0]
+    else:
+        return None
+
+
 def get_hero_info_bd(user_id) -> str:
     cursor.execute("""SELECT hero_name,
                             level,
