@@ -1,8 +1,8 @@
 import sqlite3
-
 from random import randint
 
 from bot.database import connection, cursor
+
 from bot.database.methods.get import get_hero_name_bd
 from bot.database.methods.update import create_hero_bd, delete_hero_bd
 
@@ -155,9 +155,11 @@ def hit_mob_bd(user_id):
 
     else:
         cursor.execute("""UPDATE active_mobs 
-                    SET hp = :hp
+                    SET hp = :hp,
+                        hits_taken = :hits_taken
                     WHERE telegram_id = :telegram_id""",
                        {'hp': current_mob_hp,
+                        'hits_taken': int(mob[8]) + 1,
                         'telegram_id': user_id})
 
         response += f"{mob[0]} NOW HAS {current_mob_hp} HP\n\n"
