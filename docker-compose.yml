@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  lota_game:
-    image: lota_game:latest
+  lotagame:
+    image: vvauijij/lotagame:latest
     environment:
       TOKEN: ${TOKEN}
